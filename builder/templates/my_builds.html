@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>My Builds</title>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<div class="logo">B_Y_M</div>
+
+<ul class="nav-links">
+
+<li><a href="/">Home</a></li>
+<li><a href="/my-builds/">My Builds</a></li>
+<li><a href="/my-orders/">My Orders</a></li>
+
+{% if user.is_authenticated %}
+<li class="profile">👤 {{ user.username }}</li>
+<li><a href="/accounts/logout/">Logout</a></li>
+{% else %}
+<li><a href="/accounts/login/">Login</a></li>
+{% endif %}
+
+</ul>
+
+</nav>
+
+
+<div class="container">
+
+<h1>My Saved PC Builds</h1>
+
+{% for build in builds %}
+
+<div class="build-card">
+
+<h3>Build #{{ build.id }}</h3>
+
+<p><b>CPU:</b> {{ build.cpu }}</p>
+<p><b>GPU:</b> {{ build.gpu }}</p>
+<p><b>RAM:</b> {{ build.ram }}</p>
+
+<p><b>Motherboard:</b> {{ build.motherboard }}</p>
+<p><b>Storage:</b> {{ build.storage }}</p>
+
+<p><b>PSU:</b> {{ build.psu }}</p>
+<p><b>Case:</b> {{ build.case }}</p>
+<p><b>Cooling:</b> {{ build.cooling }}</p>
+
+<p class="total">
+Total Price: €{{ build.total_price }}
+</p>
+
+<!-- 🔥 NEW BUTTONS -->
+<div style="margin-top:10px;">
+
+<a href="/edit-build/{{ build.id }}/" class="edit-btn">
+Edit Build
+</a>
+
+<a href="/delete-build/{{ build.id }}/" class="delete-btn">
+Delete Build
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>No saved builds yet.</p>
+
+{% endfor %}
+
+</div>
+
+</body>
+</html>

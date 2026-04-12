@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Checkout</title>
+
+<style>
+
+body{
+background:#0b1220;
+color:white;
+font-family:Arial;
+padding:40px;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+background:#111827;
+padding:30px;
+border-radius:10px;
+}
+
+input,textarea,select{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:5px;
+border:none;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#2563eb;
+border:none;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+.login-modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
+
+.login-box{
+background:white;
+color:black;
+padding:30px;
+border-radius:10px;
+width:320px;
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+{% if order_success %}
+
+<div id="orderModal" class="login-modal">
+
+<div class="login-box">
+
+<h2>✅ Order Placed Successfully</h2>
+
+<p>Your order has been placed.</p>
+
+<button onclick="window.location.href='/'">Return to Home</button>
+<button onclick="window.location.href='/my-orders/'">View My Orders</button>
+
+</div>
+
+</div>
+
+<script>
+document.getElementById("orderModal").style.display="flex"
+</script>
+
+{% endif %}
+
+<div class="container">
+
+<h2>Delivery Details</h2>
+
+<h3>Your PC Build</h3>
+
+<div id="build-summary">
+
+<p>CPU: <span id="sum_cpu"></span></p>
+<p>GPU: <span id="sum_gpu"></span></p>
+<p>RAM: <span id="sum_ram"></span></p>
+<p>Storage: <span id="sum_storage"></span></p>
+<p>Motherboard: <span id="sum_motherboard"></span></p>
+<p>PSU: <span id="sum_psu"></span></p>
+<p>Case: <span id="sum_case"></span></p>
+<p>Cooling: <span id="sum_cooling"></span></p>
+
+<h3>Total Price: €<span id="sum_total"></span></h3>
+
+</div>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<input type="text" name="name" placeholder="Full Name" required>
+
+<textarea name="address" placeholder="Address" required></textarea>
+
+<input type="text" name="city" placeholder="City" required>
+
+<input type="text" name="phone" placeholder="Phone Number" required>
+
+<h3>Payment Method</h3>
+
+<select name="payment_method">
+
+<option value="Cash on Delivery">Cash on Delivery</option>
+<option value="Card">Card</option>
+<option value="UPI">UPI</option>
+
+</select>
+
+
+
+<input type="hidden" name="cpu" id="order_cpu">
+<input type="hidden" name="gpu" id="order_gpu">
+<input type="hidden" name="ram" id="order_ram">
+<input type="hidden" name="storage" id="order_storage">
+<input type="hidden" name="motherboard" id="order_motherboard">
+<input type="hidden" name="psu" id="order_psu">
+<input type="hidden" name="case" id="order_case">
+<input type="hidden" name="cooling" id="order_cooling">
+<input type="hidden" name="total_price" id="order_total">
+
+<button type="submit">Place Order</button>
+
+</form>
+
+</div>
+
+<script>
+
+
+document.getElementById("sum_cpu").innerText = localStorage.getItem("build_cpu")
+document.getElementById("sum_gpu").innerText = localStorage.getItem("build_gpu")
+document.getElementById("sum_ram").innerText = localStorage.getItem("build_ram")
+document.getElementById("sum_storage").innerText = localStorage.getItem("build_storage")
+document.getElementById("sum_motherboard").innerText = localStorage.getItem("build_motherboard")
+document.getElementById("sum_psu").innerText = localStorage.getItem("build_psu")
+document.getElementById("sum_case").innerText = localStorage.getItem("build_case")
+document.getElementById("sum_cooling").innerText = localStorage.getItem("build_cooling")
+
+document.getElementById("sum_total").innerText = localStorage.getItem("build_total")
+
+
+
+document.getElementById("order_cpu").value = localStorage.getItem("build_cpu")
+document.getElementById("order_gpu").value = localStorage.getItem("build_gpu")
+document.getElementById("order_ram").value = localStorage.getItem("build_ram")
+document.getElementById("order_storage").value = localStorage.getItem("build_storage")
+document.getElementById("order_motherboard").value = localStorage.getItem("build_motherboard")
+document.getElementById("order_psu").value = localStorage.getItem("build_psu")
+document.getElementById("order_case").value = localStorage.getItem("build_case")
+document.getElementById("order_cooling").value = localStorage.getItem("build_cooling")
+
+document.getElementById("order_total").value = localStorage.getItem("build_total")
+
+localStorage.removeItem("build_cpu")
+localStorage.removeItem("build_gpu")
+localStorage.removeItem("build_ram")
+localStorage.removeItem("build_storage")
+localStorage.removeItem("build_motherboard")
+localStorage.removeItem("build_psu")
+localStorage.removeItem("build_case")
+localStorage.removeItem("build_cooling")
+localStorage.removeItem("build_total")
+</script>
+
+</script>
+
+</body>
+</html>

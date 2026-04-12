@@ -1,0 +1,18 @@
+<nav class="navbar">
+    <div class="logo">B_Y_M</div>
+
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/my-builds/">My Builds</a></li>
+        <li><a href="/my-orders/">My Orders</a></li>
+
+        {% if user.is_authenticated %}
+            <li class="profile">👤 {{ user.username }}</li>
+            <li><a href="/accounts/logout/">Logout</a></li>
+        {% else %}
+            <li><a href="/accounts/login/">Login</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+{% block content %}{% endblock %}

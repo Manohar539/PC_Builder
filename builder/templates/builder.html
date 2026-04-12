@@ -1,0 +1,179 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Sector PC Builder</title>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<div class="logo">B_Y_M</div>
+
+<ul class="nav-links">
+
+<li><a href="{% url 'home' %}">Home</a></li>
+<li><a href="/my-builds/">My Builds</a></li>
+<li><a href="/my-orders/">My Orders</a></li>
+
+{% if user.is_authenticated %}
+<li class="profile">👤 {{ user.username }}</li>
+<li><a href="/accounts/logout/">Logout</a></li>
+{% else %}
+<li><a href="#" onclick="openLogin()">Login</a></li>
+{% endif %}
+
+</ul>
+
+<div id="loginModal" class="login-modal">
+
+<div class="login-box">
+
+<span class="close-btn" onclick="closeLogin()">×</span>
+
+<h2>Login</h2>
+
+{% if messages %}
+<div style="color:red; margin-bottom:10px;">
+{% for message in messages %}
+{{ message }}
+{% endfor %}
+</div>
+{% endif %}
+
+<form method="POST" action="{% url 'login' %}">
+{% csrf_token %}
+
+<input type="text" name="username" placeholder="Username" required>
+<input type="password" name="password" placeholder="Password" required>
+
+<button type="submit">Login</button>
+
+</form>
+
+<p>New user?</p>
+<a href="/accounts/signup/">Register here</a>
+
+</div>
+
+</div>
+
+</nav>
+
+
+<header class="hero-small">
+
+<h1>Customize Your Build</h1>
+
+<h3 class="sector-title">
+{{ sector }} PC Builder
+</h3>
+
+</header>
+
+
+<div class="main-layout">
+
+<div class="builder-section">
+
+<div class="category-grid">
+
+<div class="category-card active" onclick="showCategory('cpu', this)">🖥 CPU</div>
+<div class="category-card" onclick="showCategory('gpu', this)">🎮 GPU</div>
+<div class="category-card" onclick="showCategory('ram', this)">⚡ RAM</div>
+<div class="category-card" onclick="showCategory('storage', this)">💾 Storage</div>
+<div class="category-card" onclick="showCategory('motherboard', this)">🔌 Motherboard</div>
+<div class="category-card" onclick="showCategory('psu', this)">🔋 PSU</div>
+<div class="category-card" onclick="showCategory('case', this)">📦 Case</div>
+<div class="category-card" onclick="showCategory('cooling', this)">❄ Cooling</div>
+
+</div>
+
+<h3 id="category-title">CPU Components</h3>
+
+<div id="product-list" class="product-grid"></div>
+
+</div>
+
+
+<div class="build-panel">
+
+<h2>Current PC Build</h2>
+
+<div id="compatibility-warning" class="compatibility-warning"></div>
+
+<p>CPU: <span id="cpu">Not selected</span></p>
+<p>GPU: <span id="gpu">Not selected</span></p>
+<p>RAM: <span id="ram">Not selected</span></p>
+<p>Storage: <span id="storage">Not selected</span></p>
+<p>Motherboard: <span id="motherboard">Not selected</span></p>
+<p>PSU: <span id="psu">Not selected</span></p>
+<p>Case: <span id="case">Not selected</span></p>
+<p>Cooling: <span id="cooling">Not selected</span></p>
+
+<p class="power-display">
+Total Power: <span id="power">0</span> W
+</p>
+
+<p>Recommended PSU: <span id="recommended-psu">0</span> W</p>
+
+<div class="total">
+Total Price: €<span id="total">0</span>
+</div>
+
+<button class="verify-btn" onclick="verifyBuild()">Verify Build</button>
+<button class="verify-btn" onclick="saveBuild()">Save Build</button>
+<button class="verify-btn" onclick="goToCheckout()">Checkout</button>
+
+</div>
+
+</div>
+
+
+<script>
+let componentsFromDB = [
+{% for component in components %}
+{
+name: "{{ component.name|escapejs }}",
+category: "{{ component.category|escapejs }}",
+price: {{ component.price }},
+socket: "{{ component.socket|escapejs }}",
+ram_type: "{{ component.ram_type|escapejs }}",
+power: {{ component.power }}
+}{% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+</script>
+
+
+<script>
+let existingBuild = {{ existing_build_data_json|safe }};
+</script>
+
+
+<script>
+
+let userLoggedIn = {{ user.is_authenticated|yesno:"true,false" }};
+
+function openLogin(){
+document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLogin(){
+document.getElementById("loginModal").style.display="none";
+}
+
+</script>
+
+
+<script src="{% static 'js/builder.js' %}"></script>
+
+</body>
+</html>

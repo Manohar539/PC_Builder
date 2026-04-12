@@ -1,0 +1,151 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>My Orders</title>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<style>
+
+.order-card{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.order-card:hover{
+background:#334155;
+}
+
+.order-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.order-status{
+color:#facc15;
+font-weight:bold;
+}
+
+.order-details{
+margin-top:15px;
+display:none;
+}
+
+.delivery{
+color:#38bdf8;
+font-weight:bold;
+margin-top:5px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<div class="logo">B_Y_M</div>
+
+<ul class="nav-links">
+
+<li><a href="/">Home</a></li>
+<li><a href="/my-builds/">My Builds</a></li>
+<li><a href="/my-orders/">My Orders</a></li>
+
+{% if user.is_authenticated %}
+<li class="profile">👤 {{ user.username }}</li>
+<li><a href="/accounts/logout/">Logout</a></li>
+{% endif %}
+
+</ul>
+
+</nav>
+
+<div class="container">
+
+<h1>My Orders</h1>
+
+{% for order in orders %}
+
+<div class="order-card" onclick="toggleOrder({{ order.id }})">
+
+<div class="order-header">
+
+<div>
+
+<h3>Order #{{ order.id }}</h3>
+
+<p class="order-status">
+Status: {{ order.status }}
+</p>
+
+<p class="delivery">
+Estimated Delivery: {{ order.created_at|date:"M d" }} - {{ order.created_at|date:"M d" }}
+</p>
+
+</div>
+
+<div>
+
+<p><b>Total:</b> €{{ order.total_price }}</p>
+
+</div>
+
+</div>
+
+<div id="order-details-{{ order.id }}" class="order-details">
+
+<hr>
+
+<p><b>CPU:</b> {{ order.cpu }}</p>
+<p><b>GPU:</b> {{ order.gpu }}</p>
+<p><b>RAM:</b> {{ order.ram }}</p>
+<p><b>Motherboard:</b> {{ order.motherboard }}</p>
+<p><b>Storage:</b> {{ order.storage }}</p>
+<p><b>PSU:</b> {{ order.psu }}</p>
+<p><b>Case:</b> {{ order.case }}</p>
+<p><b>Cooling:</b> {{ order.cooling }}</p>
+
+<p><b>Order Date:</b> {{ order.created_at }}</p>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>No orders yet.</p>
+
+{% endfor %}
+
+</div>
+
+<script>
+
+function toggleOrder(orderId){
+
+let section = document.getElementById("order-details-" + orderId)
+
+if(section.style.display === "block"){
+section.style.display = "none"
+}else{
+section.style.display = "block"
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

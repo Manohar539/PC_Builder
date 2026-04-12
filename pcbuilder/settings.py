@@ -1,6 +1,10 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv()
 
 SECRET_KEY = 'django-insecure-h5k+pc=ezbu51gd&+_-bp-6*8m+9&^*)bla)3ur6%52ww9*txj'
 
@@ -46,12 +50,8 @@ ROOT_URLCONF = 'pcbuilder.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-
-        # OPTIONAL (good practice)
         'DIRS': [BASE_DIR / "templates"],
-
         'APP_DIRS': True,
-
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -98,17 +98,22 @@ USE_TZ = True
 
 
 # ----------------------------
-# STATIC FILES (FIXED 🔥)
+# STATIC FILES
 # ----------------------------
 STATIC_URL = '/static/'
 
-# VERY IMPORTANT
 STATICFILES_DIRS = [
     BASE_DIR / "builder" / "static",
 ]
 
-# (optional for production)
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+# ----------------------------
+# STRIPE
+# ----------------------------
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
 
 
 # ----------------------------
@@ -119,7 +124,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 
 # ----------------------------
-# EMAIL (⚠️ not safe in real apps)
+# EMAIL
 # ----------------------------
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

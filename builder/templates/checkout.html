@@ -21,7 +21,7 @@ padding:30px;
 border-radius:10px;
 }
 
-input,textarea,select{
+input,textarea{
 width:100%;
 padding:10px;
 margin:10px 0;
@@ -37,6 +37,10 @@ border:none;
 color:white;
 border-radius:5px;
 cursor:pointer;
+}
+
+button:hover{
+background:#1d4ed8;
 }
 
 .login-modal{
@@ -67,29 +71,6 @@ text-align:center;
 
 <body>
 
-{% if order_success %}
-
-<div id="orderModal" class="login-modal">
-
-<div class="login-box">
-
-<h2>✅ Order Placed Successfully</h2>
-
-<p>Your order has been placed.</p>
-
-<button onclick="window.location.href='/'">Return to Home</button>
-<button onclick="window.location.href='/my-orders/'">View My Orders</button>
-
-</div>
-
-</div>
-
-<script>
-document.getElementById("orderModal").style.display="flex"
-</script>
-
-{% endif %}
-
 <div class="container">
 
 <h2>Delivery Details</h2>
@@ -111,7 +92,7 @@ document.getElementById("orderModal").style.display="flex"
 
 </div>
 
-<form method="POST">
+<form method="POST" action="{% url 'create_checkout_session' %}">
 
 {% csrf_token %}
 
@@ -123,18 +104,6 @@ document.getElementById("orderModal").style.display="flex"
 
 <input type="text" name="phone" placeholder="Phone Number" required>
 
-<h3>Payment Method</h3>
-
-<select name="payment_method">
-
-<option value="Cash on Delivery">Cash on Delivery</option>
-<option value="Card">Card</option>
-<option value="UPI">UPI</option>
-
-</select>
-
-
-
 <input type="hidden" name="cpu" id="order_cpu">
 <input type="hidden" name="gpu" id="order_gpu">
 <input type="hidden" name="ram" id="order_ram">
@@ -145,15 +114,13 @@ document.getElementById("orderModal").style.display="flex"
 <input type="hidden" name="cooling" id="order_cooling">
 <input type="hidden" name="total_price" id="order_total">
 
-<button type="submit">Place Order</button>
+<button type="submit">Pay with Stripe</button>
 
 </form>
 
 </div>
 
 <script>
-
-
 document.getElementById("sum_cpu").innerText = localStorage.getItem("build_cpu")
 document.getElementById("sum_gpu").innerText = localStorage.getItem("build_gpu")
 document.getElementById("sum_ram").innerText = localStorage.getItem("build_ram")
@@ -165,8 +132,6 @@ document.getElementById("sum_cooling").innerText = localStorage.getItem("build_c
 
 document.getElementById("sum_total").innerText = localStorage.getItem("build_total")
 
-
-
 document.getElementById("order_cpu").value = localStorage.getItem("build_cpu")
 document.getElementById("order_gpu").value = localStorage.getItem("build_gpu")
 document.getElementById("order_ram").value = localStorage.getItem("build_ram")
@@ -175,20 +140,7 @@ document.getElementById("order_motherboard").value = localStorage.getItem("build
 document.getElementById("order_psu").value = localStorage.getItem("build_psu")
 document.getElementById("order_case").value = localStorage.getItem("build_case")
 document.getElementById("order_cooling").value = localStorage.getItem("build_cooling")
-
 document.getElementById("order_total").value = localStorage.getItem("build_total")
-
-localStorage.removeItem("build_cpu")
-localStorage.removeItem("build_gpu")
-localStorage.removeItem("build_ram")
-localStorage.removeItem("build_storage")
-localStorage.removeItem("build_motherboard")
-localStorage.removeItem("build_psu")
-localStorage.removeItem("build_case")
-localStorage.removeItem("build_cooling")
-localStorage.removeItem("build_total")
-</script>
-
 </script>
 
 </body>

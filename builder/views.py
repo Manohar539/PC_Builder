@@ -7,11 +7,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.core.serializers.json import DjangoJSONEncoder
+from django.conf import settings
 
 import json
+import stripe
 
 from .models import Component, Build, Order, Profile
 from pcbuilderlib import calculate_price
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def home(request):
@@ -133,48 +137,102 @@ def checkout(request):
     if request.user.is_staff:
         return redirect("admin_dashboard")
 
-    if request.method == "POST":
-
-        name = request.POST.get("name")
-        address = request.POST.get("address")
-        city = request.POST.get("city")
-        phone = request.POST.get("phone")
-        payment_method = request.POST.get("payment_method")
-
-        cpu = request.POST.get("cpu")
-        gpu = request.POST.get("gpu")
-        ram = request.POST.get("ram")
-        storage = request.POST.get("storage")
-        motherboard = request.POST.get("motherboard")
-        psu = request.POST.get("psu")
-        case = request.POST.get("case")
-        cooling = request.POST.get("cooling")
-
-        total_price = request.POST.get("total_price", 0)
-
-        Order.objects.create(
-            user=request.user,
-            cpu=cpu,
-            gpu=gpu,
-            ram=ram,
-            motherboard=motherboard,
-            storage=storage,
-            psu=psu,
-            case=case,
-            cooling=cooling,
-            total_price=total_price,
-            name=name,
-            address=address,
-            city=city,
-            phone=phone,
-            payment_method=payment_method
-        )
-
-        messages.success(request, "Order placed successfully")
-
-        return render(request, "checkout.html", {"order_success": True})
-
     return render(request, "checkout.html")
+
+
+@login_required
+def create_checkout_session(request):
+
+    if request.method != "POST":
+        return redirect("checkout")
+
+    if request.user.is_staff:
+        return redirect("admin_dashboard")
+
+    name = request.POST.get("name")
+    address = request.POST.get("address")
+    city = request.POST.get("city")
+    phone = request.POST.get("phone")
+
+    cpu = request.POST.get("cpu")
+    gpu = request.POST.get("gpu")
+    ram = request.POST.get("ram")
+    storage = request.POST.get("storage")
+    motherboard = request.POST.get("motherboard")
+    psu = request.POST.get("psu")
+    case = request.POST.get("case")
+    cooling = request.POST.get("cooling")
+
+    total_price = int(request.POST.get("total_price", 0))
+
+    if total_price <= 0:
+        messages.error(request, "Invalid total price.")
+        return redirect("checkout")
+
+    order = Order.objects.create(
+        user=request.user,
+        cpu=cpu,
+        gpu=gpu,
+        ram=ram,
+        motherboard=motherboard,
+        storage=storage,
+        psu=psu,
+        case=case,
+        cooling=cooling,
+        total_price=total_price,
+        name=name,
+        address=address,
+        city=city,
+        phone=phone,
+        payment_method="Stripe",
+        status="Pending"
+    )
+
+    session = stripe.checkout.Session.create(
+        mode="payment",
+        line_items=[
+            {
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {
+                        "name": f"Custom PC Order #{order.id}",
+                    },
+                    "unit_amount": total_price * 100,
+                },
+                "quantity": 1,
+            }
+        ],
+        success_url=request.build_absolute_uri(f"/payment-success/?order_id={order.id}"),
+        cancel_url=request.build_absolute_uri("/payment-cancel/"),
+        client_reference_id=str(order.id),
+        metadata={
+            "order_id": str(order.id),
+            "user_id": str(request.user.id),
+        }
+    )
+
+    return redirect(session.url, code=303)
+
+
+@login_required
+def payment_success(request):
+
+    order_id = request.GET.get("order_id")
+
+    if order_id:
+        order = Order.objects.filter(id=order_id, user=request.user).first()
+        if order:
+            order.status = "Processing"
+            order.save()
+
+    messages.success(request, "Payment completed successfully.")
+    return redirect("my_orders")
+
+
+@login_required
+def payment_cancel(request):
+    messages.error(request, "Payment was cancelled.")
+    return redirect("checkout")
 
 
 @login_required

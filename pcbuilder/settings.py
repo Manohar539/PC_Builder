@@ -10,11 +10,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key")
 
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    ".elasticbeanstalk.com",
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # ----------------------------

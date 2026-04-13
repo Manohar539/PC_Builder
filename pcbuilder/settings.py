@@ -1,16 +1,23 @@
+
 from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+# ----------------------------
+# BASE DIR
+# ----------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
 
+# ----------------------------
+# SECURITY
+# ----------------------------
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key")
 
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"]  # For exam / EC2 access
 
 
 # ----------------------------
@@ -32,7 +39,7 @@ INSTALLED_APPS = [
 # ----------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -42,7 +49,12 @@ MIDDLEWARE = [
 ]
 
 
+# ----------------------------
+# URLS / WSGI
+# ----------------------------
 ROOT_URLCONF = 'pcbuilder.urls'
+
+WSGI_APPLICATION = 'pcbuilder.wsgi.application'
 
 
 # ----------------------------
@@ -62,9 +74,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
-WSGI_APPLICATION = 'pcbuilder.wsgi.application'
 
 
 # ----------------------------
@@ -99,7 +108,7 @@ USE_TZ = True
 
 
 # ----------------------------
-# STATIC FILES
+# STATIC FILES (PRODUCTION READY)
 # ----------------------------
 STATIC_URL = '/static/'
 
@@ -138,13 +147,18 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 
 
 # ----------------------------
-# SECURITY / PROXY
+# CSRF / SECURITY
 # ----------------------------
 CSRF_TRUSTED_ORIGINS = [
+    "http://52.90.134.139",
     "http://127.0.0.1:8000",
     "http://localhost:8000",
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+
+# ----------------------------
+# DEFAULT FIELD
+# ----------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

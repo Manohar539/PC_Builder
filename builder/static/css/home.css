@@ -43,7 +43,7 @@ color:#38bdf8;
 .Box1{
 height:420px;
 
-background-image:url('https://pcbuilder-static-539.s3.us-east-1.amazonaws.com/image/pc.jpg');
+background-image:url('https://pcbuilder-static-539.s3.us-east-1.amazonaws.com/image/pc.jpg' );
 background-size:cover;
 background-position:center;
 

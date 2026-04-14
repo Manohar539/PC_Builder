@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
 import json
 import stripe
@@ -116,7 +118,6 @@ def save_build(request):
 def edit_build(request, build_id):
 
     build = get_object_or_404(Build, id=build_id, user=request.user)
-
     return redirect(f"/builder/?sector={build.sector}&edit={build.id}")
 
 
@@ -127,7 +128,6 @@ def my_builds(request):
         return redirect("admin_dashboard")
 
     builds = Build.objects.filter(user=request.user)
-
     return render(request, "my_builds.html", {"builds": builds})
 
 
@@ -169,6 +169,10 @@ def create_checkout_session(request):
         messages.error(request, "Invalid total price.")
         return redirect("checkout")
 
+    # ✅ DELIVERY LOGIC ADDED HERE
+    start_date = timezone.now().date()
+    end_date = start_date + timedelta(days=3)
+
     order = Order.objects.create(
         user=request.user,
         cpu=cpu,
@@ -185,7 +189,9 @@ def create_checkout_session(request):
         city=city,
         phone=phone,
         payment_method="Stripe",
-        status="Pending"
+        status="Pending",
+        delivery_start=start_date,
+        delivery_end=end_date
     )
 
     session = stripe.checkout.Session.create(
@@ -242,7 +248,6 @@ def my_orders(request):
         return redirect("admin_dashboard")
 
     orders = Order.objects.filter(user=request.user).order_by("-created_at")
-
     return render(request, "my_orders.html", {"orders": orders})
 
 

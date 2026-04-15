@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pcbuilderlib"
+version = "0.1.1"
+description = "A Python library for PC building calculations"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name = "Manohar", email = "manoharsanaboina539@example.com" }
+]
+license = { text = "MIT" }
+
+[tool.setuptools]
+packages = ["pcbuilderlib"]
